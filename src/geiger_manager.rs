@@ -5,23 +5,28 @@
 )]
 
 use esp_hal::{
-    gpio::{interconnect::PeripheralInput, Input, InputConfig, Pull},
-    pcnt::{channel::EdgeMode, unit::Unit, Pcnt},
+    gpio::{Input, InputConfig, Pull, interconnect::PeripheralInput},
+    pcnt::{Pcnt, channel::EdgeMode, unit::Unit},
 };
 
 pub struct GeigerManager<'a> {
     unit: Unit<'a, 0>,
+    pub cpm_ratio: f32,
 }
 
 impl<'a> GeigerManager<'a> {
     pub fn new<T: PeripheralInput<'a> + esp_hal::gpio::InputPin>(
         pcnt: Pcnt<'a>,
         pulse_pin: T,
+        cpm_ratio: f32,
     ) -> Self {
         let unit: esp_hal::pcnt::unit::Unit<'_, 0> = pcnt.unit0;
 
         unit.set_low_limit(Some(-32767)).ok();
         unit.set_high_limit(Some(32767)).ok();
+
+        unit.set_filter(Some(10)).ok();
+
         unit.clear();
 
         let config = InputConfig::default().with_pull(Pull::None);
@@ -30,9 +35,9 @@ impl<'a> GeigerManager<'a> {
 
         unit.channel0.set_edge_signal(pulse_signal);
         unit.channel0
-            .set_input_mode(EdgeMode::Hold, EdgeMode::Increment); // falling edge
+            .set_input_mode(EdgeMode::Hold, EdgeMode::Increment);
 
-        Self { unit }
+        Self { unit, cpm_ratio }
     }
 
     /// Read raw signed counter value
