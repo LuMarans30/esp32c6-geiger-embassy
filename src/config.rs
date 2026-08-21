@@ -150,15 +150,10 @@ fn config_addr(flash: &FlashStorage<'static>) -> Option<u32> {
 fn encode(divider: f32, polarity: PulsePolarity) -> [u8; RECORD_SIZE] {
     let mut buf = [0u8; RECORD_SIZE];
 
-    // 0..4: Magic
     buf[0..4].copy_from_slice(&MAGIC.to_le_bytes());
-    // 4..8: Divider
     buf[4..8].copy_from_slice(&divider.to_bits().to_le_bytes());
-    // 8: Polarity
     buf[8] = polarity.to_byte();
-    // 9..12: Padding (zeros)
 
-    // 12..16: CRC32 of the first 12 bytes
     let crc = crc32(&buf[0..12]);
     buf[12..16].copy_from_slice(&crc.to_le_bytes());
 

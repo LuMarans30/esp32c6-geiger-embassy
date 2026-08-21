@@ -36,7 +36,6 @@ async fn cli_task(mut serial: Serial, mut config: ConfigStore) {
     }
 }
 
-// ... read_line remains exactly the same as previous iteration ...
 async fn read_line(serial: &mut Serial, line: &mut [u8], skip_lf: &mut bool) -> usize {
     let mut len = 0usize;
     loop {
