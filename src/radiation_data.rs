@@ -1,4 +1,4 @@
-use alloc::fmt;
+use defmt::{Formatter, write};
 use serde::{Deserialize, Serialize};
 
 /// Radiation measurement data shared between tasks
@@ -14,11 +14,11 @@ pub struct RadiationData {
     pub accumulated_usv: f32,
 }
 
-impl fmt::Display for RadiationData {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl defmt::Format for RadiationData {
+    fn format(&self, fmt: Formatter) {
         write!(
-            f,
-            "Total counts: {} | CPM: {:.1} | Dose: {:.3} µSv/h | Accum: {:.3} µSv",
+            fmt,
+            "Total counts: {} | CPM: {} | Dose: {} µSv/h | Accum: {} µSv",
             self.total_counts, self.cpm, self.dose_rate_usv_h, self.accumulated_usv
         )
     }
