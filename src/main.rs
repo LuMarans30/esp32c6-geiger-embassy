@@ -40,8 +40,7 @@ async fn main(spawner: Spawner) {
 
     info!("Embassy initialized!");
 
-    // SBT-11A: 318.0 CPM/µSv/h | M4011/J305: 153.8 CPM/µSv/h
-    const CPM_RATIO: f32 = 318.0;
+    const CPM_RATIO: f32 = 153.8; // default CAJOE tube (M4011 / J305)
 
     geiger_manager::spawn_tasks(spawner, peripherals.GPIO4, CPM_RATIO);
     spawner.spawn(data_consumer().unwrap());
